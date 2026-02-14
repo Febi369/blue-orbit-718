@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Valentine Week for You 💙</title>
+<style>
+body {
+    margin:0;
+    overflow-x:hidden;
+    font-family: 'Georgia', serif;
+    background: radial-gradient(#0f2027, #1c1c2b);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    text-align:center;
+}
+body.scrollable {
+    align-items:flex-start;
+    padding:40px 20px;
+    overflow-y:auto;
+}
+canvas {
+    position:absolute;
+    top:0;
+    left:0;
+    pointer-events:none;
+    z-index:1;
+}
+.container{
+    position:relative;
+    z-index:2;
+    max-width:650px;
+    padding:40px;
+}
+button{
+    padding:12px 25px;
+    margin-top:25px;
+    border:none;
+    border-radius:20px;
+    background-color:#b11226;
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+    transition:all 0.3s ease;
+    box-shadow:0 4px 8px rgba(0,0,0,0.2);
+}
+button:hover{
+    background-color:#d11a2f;
+    transform:translateY(-2px);
+    box-shadow:0 6px 12px rgba(0,0,0,0.3);
+}
+.yes-no-container{
+    display:flex;
+    gap:20px;
+    justify-content:center;
+    margin-top:30px;
+    align-items:center;
+}
+.yes-btn{
+    padding:15px 40px;
+    font-size:18px;
+    background-color:#28a745;
+    border:none;
+    border-radius:25px;
+    color:white;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    box-shadow:0 4px 8px rgba(0,0,0,0.2);
+}
+.yes-btn:hover{
+    background-color:#218838;
+    transform:scale(1.05);
+    box-shadow:0 6px 12px rgba(0,0,0,0.3);
+}
+.no-btn{
+    padding:15px 40px;
+    font-size:18px;
+    background-color:#dc3545;
+    border:none;
+    border-radius:25px;
+    color:white;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    box-shadow:0 4px 8px rgba(0,0,0,0.2);
+    position:relative;
+}
+.no-btn:hover,
+.no-btn:active{
+    transform:translateX(200px) translateY(-100px);
+    opacity:0;
+    pointer-events:none;
+}
+.no-btn.moving{
+    animation:slideAway 0.5s ease forwards;
+}
+@keyframes slideAway{
+    to{
+        transform:translateX(300px) translateY(-150px) rotate(45deg);
+        opacity:0;
+    }
+}
+.heart-button{
+    width:60px;
+    height:54px;
+    background-color:#b11226;
+    position:relative;
+    transform:rotate(-45deg);
+    cursor:pointer;
+    margin:25px auto;
+    box-shadow:0 4px 8px rgba(0,0,0,0.3);
+    transition:transform 0.3s ease;
+}
+.heart-button:before,
+.heart-button:after{
+    content:'';
+    width:60px;
+    height:54px;
+    position:absolute;
+    left:0;
+    top:0;
+    background-color:#b11226;
+    border-radius:50px 50px 0 0;
+    transform:rotate(-45deg);
+    transform-origin:0 100%;
+}
+.heart-button:after{
+    left:50%;
+    transform:rotate(45deg);
+    transform-origin:100% 100%;
+}
+.heart-button:hover{
+    transform:rotate(-45deg) scale(1.1);
+}
+.heart-button-content{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) rotate(45deg);
+    color:white;
+    font-size:10px;
+    font-weight:bold;
+    z-index:10;
+    white-space:nowrap;
+    max-width:200px;
+    text-align:center;
+    line-height:1.2;
+}
+.heart-button{
+    width:60px;
+    height:54px;
+    background-color:#b11226;
+    position:relative;
+    transform:rotate(-45deg);
+    cursor:pointer;
+    margin:25px auto;
+    box-shadow:0 4px 8px rgba(0,0,0,0.3);
+    transition:transform 0.3s ease;
+}
+.heart-button.large{
+    width:120px;
+    height:108px;
+}
+.heart-button.large:before,
+.heart-button.large:after{
+    width:120px;
+    height:108px;
+}
+.puzzle-text{
+    display:inline-block;
+    margin:0 2px;
+    opacity:0;
+    animation:puzzleReveal 0.5s ease forwards;
+}
+@keyframes puzzleReveal{
+    from{
+        opacity:0;
+        transform:translateY(-10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+.secret{
+    position:fixed;
+    bottom:10px;
+    right:10px;
+    font-size:12px;
+    opacity:0.3;
+    cursor:pointer;
+    z-index:3;
+}
+.fadeText {
+    opacity:0;
+    transition:opacity 1.5s ease-in-out;
+}
+.fadeText.show{
+    opacity:1;
+}
+.letter{
+    max-width:650px;
+    margin:0 auto;
+    text-align:left;
+    line-height:1.8;
+    font-size:18px;
+    padding:20px;
+    min-height:auto;
+}
+.floating-heart,
+.floating-rose{
+    position:fixed;
+    bottom:-40px;
+    pointer-events:none;
+    animation:floatUp 6s linear forwards;
+    z-index:3;
+}
+@keyframes floatUp{
+    from{transform:translateY(0);opacity:1;}
+    to{transform:translateY(-120vh);opacity:0;}
+}
+
+.final-love-wrapper{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:70vh;
+    text-align:center;
+}
+
+.final-love-text{
+    font-family:'Brush Script MT','Segoe Script',cursive;
+    font-size:64px;
+    letter-spacing:1px;
+}
+.final-love-image{
+    max-width:400px;
+    width:100%;
+    height:auto;
+    border-radius:15px;
+    margin:20px 0;
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+</style>
+</head>
+<body>
+
+    <script>
+        let password = prompt("Enter the password to enter our universe 💙");
+        if(password !== "ouruniverse"){
+            document.body.innerHTML = "<h2 style='color:white;text-align:center;margin-top:20%;'>Access Denied 🌌</h2>";
+        }
+        </script>
+        
+
+<canvas id="particles"></canvas>
+
+<!-- Background music (starts when "Open" is clicked) -->
+<audio id="bgm" src="favmusic.mp3" loop></audio>
+
+<div class="container" id="main">
+<h1 class="fadeText" id="line1"></h1>
+<h2 class="fadeText" id="line2"></h2>
+<h3 class="fadeText" id="line3"></h3>
+<p class="fadeText" id="line4"></p>
+<button class="fadeText" id="startBtn" onclick="startWeek()">Open</button>
+</div>
+
+<div class="secret" onclick="reviewPanel()">S</div>
+
+<script>
+// --- Universe Particles ---
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+let particles=[];
+
+function initParticles(){
+    particles=[];
+    for(let i=0;i<200;i++){
+        particles.push({
+            x:Math.random()*canvas.width,
+            y:Math.random()*canvas.height,
+            r:Math.random()*1.5+0.5,
+            d:Math.random()*2,
+            color:'white'
+        });
+    }
+}
+
+function resizeCanvas(){
+    canvas.width=window.innerWidth;
+    // Make sure the starfield covers the whole page, even when it scrolls
+    const docHeight = Math.max(
+        window.innerHeight,
+        document.body.scrollHeight || 0,
+        document.documentElement.scrollHeight || 0
+    );
+    canvas.height=docHeight;
+    initParticles();
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+document.getElementById('line1').innerText = " UNLOCK THE GIFT 💙";
+document.getElementById('line1').classList.add('show');
+document.getElementById('line2').innerText = "This is a small gift for you, it took me a lot of time to make it hope you like it!";
+document.getElementById('line2').classList.add('show');
+document.getElementById('startBtn').classList.add('show');
+
+function drawParticles(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(let i=0;i<particles.length;i++){
+        ctx.beginPath();
+        ctx.arc(particles[i].x,particles[i].y,particles[i].r,0,Math.PI*2);
+        ctx.fillStyle=particles[i].color;
+        ctx.fill();
+    }
+    updateParticles();
+}
+function updateParticles(){
+    for(let i=0;i<particles.length;i++){
+        particles[i].y-=particles[i].d;
+        if(particles[i].y<0) particles[i].y=canvas.height;
+    }
+    requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// --- Valentine Week Data ---
+const weekDays=[
+{day:"Day 7 - Rose Day", message:"Roses are red… I’m thinking of you."},
+{day:"Day 8 - Propose Day", message:"I would propose… just to see you smile."},
+{day:"Day 9 - Chocolate Day", message:"Sweet moments like chocolates… that’s you."},
+{day:"Day 10 - Teddy Day", message:"Even the softest teddy cannot match your warmth."},
+{day:"Day 11 - Promise Day", message:"I promise to remember these moments with you."},
+{day:"Day 12 - Hug Day", message:"If I could, I’d hug you right now."},
+{day:"Day 13 - Kiss Day", message:"Even a simple kiss feels like magic with you."},
+{day:"Day 14 - Valentine’s Day", message:"I miss you. I don’t need grand gestures. I just want you to feel me in this moment. ❤️"}
+];
+
+let currentDay=0;
+
+// --- Floating Hearts & Roses ---
+let loveAnimationInterval=null;
+
+function createFloatingEmoji(emoji, className){
+    const span=document.createElement('span');
+    span.className=className;
+    span.textContent=emoji;
+    span.style.left=Math.random()*100+'vw';
+    span.style.fontSize=(24+Math.random()*16)+'px';
+    document.body.appendChild(span);
+    setTimeout(()=>span.remove(),6000);
+}
+
+function startLoveAnimations(){
+    if(loveAnimationInterval) return;
+    loveAnimationInterval=setInterval(()=>{
+        createFloatingEmoji('🌹','floating-rose');
+        if(Math.random()<0.7){
+            createFloatingEmoji('❤️','floating-heart');
+        }
+    },800);
+}
+
+function stopLoveAnimations(){
+    if(loveAnimationInterval){
+        clearInterval(loveAnimationInterval);
+        loveAnimationInterval=null;
+    }
+}
+
+// One-time heart burst for the final pop
+function heartBurst(){
+    for(let i=0;i<40;i++){
+        setTimeout(()=>{
+            const emoji = Math.random() < 0.5 ? '❤️' : '💖';
+            createFloatingEmoji(emoji,'floating-heart');
+        }, i*40);
+    }
+}
+
+// Puzzle text animation - reveals letters progressively
+function createPuzzleText(text, container){
+    const words = text.split(' ');
+    words.forEach((word, wordIndex)=>{
+        const wordSpan = document.createElement('span');
+        wordSpan.style.marginRight = '8px';
+        
+        for(let i=0; i<word.length; i++){
+            const letterSpan = document.createElement('span');
+            letterSpan.className = 'puzzle-text';
+            letterSpan.textContent = word[i];
+            letterSpan.style.animationDelay = (wordIndex * 0.3 + i * 0.1) + 's';
+            wordSpan.appendChild(letterSpan);
+        }
+        
+        container.appendChild(wordSpan);
+    });
+}
+
+// --- Start Journey ---
+function startWeek(){
+const bgm = document.getElementById('bgm');
+if (bgm) {
+    bgm.play();
+}
+showDay();
+document.getElementById('startBtn').style.display='none';
+}
+
+// --- Show Day ---
+function showDay(){
+if(currentDay<weekDays.length){
+    let dayInfo=weekDays[currentDay];
+    document.getElementById('line1').innerText=dayInfo.day;
+    document.getElementById('line2').innerText=dayInfo.message;
+    document.getElementById('line1').classList.add('show');
+    document.getElementById('line2').classList.add('show');
+    
+    // Day-specific particle color
+    for(let i=0;i<particles.length;i++){
+        switch(currentDay){
+            case 0: particles[i].color='pink'; break; // Rose petals
+            case 1: particles[i].color='red'; break; // Hearts
+            case 2: particles[i].color='brown'; break; // Chocolates
+            case 3: particles[i].color='orange'; break; // Teddy warmth
+            case 4: particles[i].color='lightblue'; break; // Promise sparkle
+            case 5: particles[i].color='purple'; break; // Hug balloons
+            case 6: particles[i].color='red'; break; // Valentine hearts
+            default: particles[i].color='white';
+        }
+    }
+
+    // Create button with puzzle text
+    let btnContainer=document.createElement('div');
+    btnContainer.style.textAlign='center';
+    btnContainer.style.marginTop='25px';
+    
+    let nextBtn=document.createElement('button');
+    nextBtn.textContent=(currentDay===weekDays.length-1)?'Now choose wisely!':'Next Day →';
+    nextBtn.onclick=nextDay;
+    
+    btnContainer.appendChild(nextBtn);
+    
+    // Add puzzle text below the button for the last day
+    if(currentDay===weekDays.length-1){
+        let puzzleContainer=document.createElement('div');
+        puzzleContainer.style.marginTop='20px';
+        puzzleContainer.style.fontSize='18px';
+        puzzleContainer.style.color='white';
+        createPuzzleText('will you be my valentine', puzzleContainer);
+        btnContainer.appendChild(puzzleContainer);
+        
+        // Add Yes/No buttons
+        setTimeout(()=>{
+            let yesNoContainer=document.createElement('div');
+            yesNoContainer.className='yes-no-container';
+            
+            let yesBtn=document.createElement('button');
+            yesBtn.className='yes-btn';
+            yesBtn.textContent='Yes ❤️';
+            yesBtn.onclick=handleYesClick;
+            
+            let noBtn=document.createElement('button');
+            noBtn.className='no-btn';
+            noBtn.textContent='No';
+            noBtn.onmouseenter=()=>{
+                noBtn.classList.add('moving');
+            };
+            noBtn.onclick=()=>{
+                noBtn.classList.add('moving');
+            };
+            
+            yesNoContainer.appendChild(yesBtn);
+            yesNoContainer.appendChild(noBtn);
+            btnContainer.appendChild(yesNoContainer);
+        }, 3000); // Show buttons after puzzle text animation completes
+    }
+    
+    document.getElementById('main').appendChild(btnContainer);
+
+}else{
+    showFinalMessage();
+}
+}
+
+// --- Next Day ---
+function nextDay(){
+currentDay++;
+document.getElementById('main').innerHTML=`<div class="container" id="main"></div>`;
+document.getElementById('main').innerHTML=`
+<h1 class="fadeText" id="line1"></h1>
+<h2 class="fadeText" id="line2"></h2>
+`;
+showDay();
+}
+
+// --- Handle Yes Button Click ---
+function handleYesClick(){
+    // First show the long hidden message
+    hiddenLove();
+    // The long message has a "One last thing..." button that calls showUltimateLove()
+}
+
+// --- Hidden Love Message ---
+function hiddenLove(){
+    startLoveAnimations();
+    document.body.classList.add('scrollable');
+
+    document.getElementById("main").innerHTML = `
+    <div class="letter">
+    <h2 style="text-align:center;">My Love,</h2>
+
+    <p>As Valentine’s Week passes from Rose Day to today, I keep thinking about us.</p>
+
+    <p>Each day is supposed to mean something — roses, promises, hugs, love — but for me, it’s always been simpler. It’s about feeling close to you. Feeling remembered. Feeling chosen.</p>
+
+    <p>After we watched <strong>With Love</strong>, I felt complete in that moment. I felt warmth, comfort… like everything was right. And then suddenly, there was silence. No message. No call. Nothing.</p>
+
+    <p>I won’t lie — that hurt.</p>
+
+    <p>Not because I expect grand gestures.<br>
+    Not because I need constant attention.<br>
+    But because when I care deeply, I feel deeply.</p>
+
+    <p>I miss you.<br>
+    I miss the small texts.<br>
+    I miss the effort.<br>
+    I miss feeling like I matter in your day.</p>
+
+    <p>This Valentine’s, I’m not asking for perfection. I’m not asking for big surprises. I just want to feel that I’m important to you — not just in words, but in presence.</p>
+
+    <p>I love you.<br>
+    And loving you means I want us to feel close, not distant.</p>
+
+    <h3 style="text-align:center; margin-top:30px;">Happy Valentine’s Day ❤️</h3>
+
+    <div style="text-align:center; margin-top:25px;">
+        <button onclick="showUltimateLove()">One last thing...</button>
+    </div>
+    </div>
+    `;
+
+window.scrollTo(0, 0);
+}
+
+// --- Ultimate Love Screen ---
+function showUltimateLove(){
+startLoveAnimations();
+document.body.classList.add('scrollable');
+// Show "Happy Valentine's Day" with a button
+document.getElementById("main").innerHTML=`
+<div class="final-love-wrapper">
+  <div>
+    <h2 style="font-size:48px; margin-bottom:30px;">Happy Valentine's Day AP 💙</h2>
+    <button onclick="showFinalLoveMessage()" style="margin-top:20px;">Open Final Message 💌</button>
+  </div>
+</div>
+`;
+window.scrollTo(0, 0);
+}
+
+// --- Final Love Message ---
+function showFinalLoveMessage(){
+document.getElementById("main").innerHTML=`
+<div class="final-love-wrapper">
+  <div>
+    <h2 class="final-love-text">❤️ I love you ❤️</h2>
+    <p style="font-size:24px; margin-top:30px; font-style:italic;">yours lovely - Febi</p>
+  </div>
+</div>
+`;
+heartBurst();
+window.scrollTo(0, 0);
+}
+
+// --- Final Message ---
+function showFinalMessage(){
+hiddenLove();
+localStorage.setItem("valentineOpened", new Date().toLocaleString());
+}
+
+// --- Secret Panel ---
+function reviewPanel(){
+let pass=prompt("Enter secret password:");
+if(pass==="darkblue"){
+let opened=localStorage.getItem("valentineOpened") || "Not opened yet";
+document.getElementById('main').innerHTML=`
+<h2>Private Review Panel 🔐</h2>
+<p><b>He opened the Valentine page at:</b> ${opened}</p>
+<button onclick="location.reload()">Back</button>
+`;
+}
+}
+</script>
+
+</body>
+</html>
